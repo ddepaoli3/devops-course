@@ -1,0 +1,33 @@
+---
+- name: My first ansible playbook
+  hosts: jenkins
+  become: true
+  remote_user: centos
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa
+  tasks:
+
+      - name: Add jenkins server key
+        rpm_key:
+          state: present
+          key: https://pkg.jenkins.io/redhat/jenkins.io.key
+
+      - name: Add repository
+        yum_repository:
+          name: jenkins
+          description: jenkins YUM repo
+          baseurl: https://pkg.jenkins.io/redhat/
+
+      - name: Install jenkins package
+        yum:
+          name: jenkins
+          update_cache: yes
+
+      - name: Install java package
+        yum:
+          name: java-1.8.0-openjdk
+
+      - name: Start jenkins
+        service:
+          name: jenkins
+          state: started
