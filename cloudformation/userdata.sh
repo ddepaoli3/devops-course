@@ -1,6 +1,6 @@
 machinename=machine-name
-apt-get update
-apt-get install --yes ansible
+yum -y update
+yum install -y ansible git
 hostnamectl set-hostname --static $machinename
 echo 'preserve_hostname: true' | tee -a /etc/cloud/cloud.cfg
 reboot
