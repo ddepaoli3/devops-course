@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "AccountName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "test"
+  },
+  {
+    "ParameterKey": "Owner",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "CostCenter",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "Project",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "ImageId",
+    "ParameterValue": "ami-ee6a718a"
+  },
+  {
+    "ParameterKey": "InstanceName",
+    "ParameterValue": "jenkins"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t2.medium"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "SubnetId",
+    "ParameterValue": "subnet-096bb3b6f0c2afcff"
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "vpc-07e5be241831be799"
+  }
+]

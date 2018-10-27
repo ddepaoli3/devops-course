@@ -1,0 +1,111 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Bastion Host in autoscaling 1:1 with EIP association
+Parameters:
+  AccountName:
+    Type: String
+  Environment:
+    Type: String
+  Owner:
+    Type: String
+  CostCenter:
+    Type: String
+  Project:
+    Type: String
+  ImageId:
+    Type: String
+  InstanceName:
+    Type: String
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    AllowedValues:
+    - t2.nano
+    - t2.micro
+    - t2.small
+    - t2.medium
+    - t2.large
+    ConstraintDescription: must be a valid EC2 instance type.
+  KeyName:
+    Description: The EC2 Key Pair to allow SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  SubnetId:
+    Type: String
+  VpcId:
+    Type: String
+
+Resources:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+      - !Ref IAMRole
+  IAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: associateEIP
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ec2:AssociateAddress
+            - ec2:Describe*
+            Resource: "*"
+  EC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      IamInstanceProfile: !Ref InstanceProfile
+      KeyName: !Ref KeyName
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref ImageId
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -x
+            machinename=daniel
+            yum -y update
+            yum install -y ansible git
+            hostnamectl set-hostname --static $machinename
+            echo 'preserve_hostname: true' | tee -a /etc/cloud/cloud.cfg
+            reboot
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Join:
+          - "-"
+          - - !Ref Project
+            - !Ref Environment
+            - !Ref InstanceName
+      - Key: Project
+        Value: !Ref Project
+      - Key: Environment
+        Value: !Ref Environment
+      - Key: Owner
+        Value: !Ref Owner
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: Enable SSH access
+      SecurityGroupIngress:
+      - IpProtocol: "tcp"
+        FromPort: "22"
+        ToPort: "9000"
+        CidrIp: 0.0.0.0/0
