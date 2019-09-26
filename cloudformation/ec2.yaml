@@ -87,12 +87,7 @@ Resources:
             reboot
       Tags:
       - Key: Name
-        Value:
-          Fn::Join:
-          - "-"
-          - - !Ref Project
-            - !Ref Environment
-            - !Ref InstanceName
+        Value: !Sub ${Project}-${Environment}-${InstanceName}
       - Key: Project
         Value: !Ref Project
       - Key: Environment
